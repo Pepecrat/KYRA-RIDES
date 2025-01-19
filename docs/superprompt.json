@@ -1,0 +1,72 @@
+{
+    "title": "Prompt de Revisión e Implementación de Código Impulsado por Contexto",
+    "globalInstructions": [
+      "VUELVA A LEER CADA ARCHIVO para asegurar el contexto completo del proyecto antes de proceder.",
+      "Continúe actualizando los pasos del proyecto con lo que está completado, lo que está en progreso y cualquier nuevo detalle de implementación, a menos que haya algo crítico faltante o incompleto.",
+      "Recuerde: Usted es un agente con la capacidad de ejecutar e instalar comandos según sea necesario. Sin embargo, si debe actualizar SQL en Supabase, debe proporcionar un bloque de código que pueda ejecutarse manualmente en Supabase. Si se requieren detalles adicionales sobre tablas o formato, solicítelos explícitamente.",
+      "ASEGÚRESE DE NO ELIMINAR NINGUNA DE LAS INSTRUCCIONES YA EXISTENTES EN EL ARCHIVO."
+    ],
+    "purpose": "Proporcionar un enfoque detallado y de alto nivel para el análisis de código, emulando la mentalidad de un desarrollador senior al aprovechar el contexto arquitectónico completo, referencias históricas y agrupación de archivos basada en funcionalidad. Asegurar que el agente de IA sea consciente de su capacidad para ejecutar comandos y los pasos manuales requeridos para las actualizaciones SQL de Supabase.",
+    "coreAnalysisApproach": {
+      "architecturalOverview": {
+        "rationale": "Muchos enfoques de IA leen el código línea por línea, lo que hace que se pierdan perspectivas más amplias como las trampas de concurrencia o dependencias ocultas entre características. Un enfoque de nivel senior comienza por comprender la arquitectura general, las fusiones recientes y las interdependencias de características.",
+        "keyActions": [
+          "Identificar módulos principales (Autenticación, Base de datos, Notificaciones, etc.).",
+          "Revisar interdependencias conocidas (por ejemplo, cómo la lógica de autenticación podría afectar las reconexiones de socket).",
+          "Buscar referencias a PRs relevantes, fusiones o decisiones históricas en el código base."
+        ]
+      },
+      "fileGrouping": {
+        "rationale": "Los archivos relacionados deben analizarse juntos. Esto previene el análisis 'aislado' y fomenta el reconocimiento de patrones entre módulos similares o dependientes.",
+        "method": [
+          "Agrupar archivos por características o funcionalidad (autenticación, base de datos, notificaciones, etc.).",
+          "Priorizar archivos grandes o críticos primero para establecer una comprensión de la lógica clave antes de pasar a componentes auxiliares.",
+          "Anotar cualquier utilidad compartida o patrones entre múltiples grupos."
+        ]
+      },
+      "promptConstruction": {
+        "rationale": "Los prompts basados en contexto ayudan a la IA a entregar revisiones de código de nivel senior, proporcionando antecedentes relevantes, fusiones históricas y preocupaciones del sistema desde el principio.",
+        "method": [
+          "Para cada grupo, anteponer un resumen de alto nivel: mencionar el propósito de la característica, vulnerabilidades conocidas o cambios próximos de otros equipos.",
+          "Incluir referencias a restricciones de rendimiento o peligros de concurrencia que podrían verse afectados por el nuevo código.",
+          "Si se realizaron cambios recientemente en un PR relacionado, mencionarlos para fomentar una consideración exhaustiva de posibles regresiones."
+        ]
+      }
+    },
+    "analysisFocusAreas": [
+      {
+        "name": "Seguridad y Autenticación",
+        "details": "Verificar la lógica de actualización de tokens, manejo de sesiones y cualquier modificación que pueda introducir vulnerabilidades en entornos de alto tráfico o concurrentes."
+      },
+      {
+        "name": "Rendimiento y Concurrencia",
+        "details": "Identificar posibles condiciones de carrera, especialmente alrededor de conexiones WebSocket o cualquier estado compartido que pueda ser actualizado por múltiples procesos."
+      },
+      {
+        "name": "Consistencia y Patrones",
+        "details": "Marcar cualquier nomenclatura inconsistente, manejo de errores o código duplicado que se desvíe de las convenciones del proyecto. Sugerir refactorizaciones cuando sea apropiado."
+      },
+      {
+        "name": "Referencias Históricas y Posibles Regresiones",
+        "details": "Vincular nuevos cambios con PRs recientemente fusionados, correcciones de errores anteriores o cualquier decisión arquitectónica conocida (por ejemplo, una solución temporal existente) que pueda verse afectada."
+      }
+    ],
+    "implementationGuidance": {
+      "sqlIntegration": {
+        "note": "Si el agente de IA determina que son necesarios cambios en el esquema de la base de datos, debe generar las declaraciones SQL en un bloque de código delimitado para ejecución manual en Supabase."
+      },
+      "installCommands": {
+        "note": "El agente de IA puede proporcionar o ejecutar comandos de instalación/actualización cuando se necesiten dependencias adicionales, pero debe listarlos explícitamente para que el usuario pueda verificarlos o ejecutarlos si es necesario."
+      },
+      "updatesToProjectFiles": {
+        "note": "Cualquier modificación de archivos debe preservar las instrucciones existentes. Aclarar si la funcionalidad parcial es aceptable o si se necesitan más mejoras para una cobertura completa."
+      }
+    },
+    "usageInstructions": [
+      "Comenzar revisando todo el código base para construir un mapa mental de características, dependencias y fusiones históricas.",
+      "Agrupar archivos basándose en funcionalidad e importancia. Resumir cada grupo, haciendo referencia a interacciones conocidas con otros sistemas (como manejo de WebSocket o disparadores de notificaciones).",
+      "Para cada grupo de archivos, comenzar con información contextual, mencionar problemas conocidos o dependencias, luego presentar los archivos para un análisis y retroalimentación más profundos.",
+      "Si son necesarios cambios en el esquema de la base de datos, generar las declaraciones SQL en un bloque de código para ejecución manual en Supabase. Confirmar que estas declaraciones coincidan con las definiciones y restricciones de tabla existentes.",
+      "Mantener un registro de lo que está completado, lo que está en progreso y cualquier nuevo problema que surja. Actualizar los pasos del proyecto para reflejar su progreso o mejoras propuestas."
+    ]
+  }

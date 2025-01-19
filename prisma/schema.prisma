@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  driver
+  passenger
+  admin
+}
+
+enum AccountStatus {
+  active
+  inactive
+  suspended
+  pending_verification
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+enum VehicleStatus {
+  active
+  inactive
+  maintenance
+}
+
+enum TripStatus {
+  requested
+  accepted
+  in_progress
+  completed
+  cancelled
+}
+
+enum PaymentMethod {
+  cash
+  bank_transfer
+  mobile_payment
+  crypto
+  card
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+enum DocumentType {
+  license
+  insurance
+  registration
+  inspection
+}
+
+model User {
+  id        String        @id @default(uuid()) @db.Uuid
+  role      UserRole
+  email     String        @unique
+  phone     String        @unique
+  status    AccountStatus @default(pending_verification)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  profile           Profile?
+  vehicles          Vehicle[]
+  tripsAsPassenger  Trip[]              @relation("PassengerTrips")
+  tripsAsDriver     Trip[]              @relation("DriverTrips")
+  ratingsGiven      Rating[]            @relation("RatingsGiven")
+  ratingsReceived   Rating[]            @relation("RatingsReceived")
+  emergencyContacts EmergencyContact[]
+  driverDocuments   DriverDocument[]
+
+  @@map("users")
+}
+
+model Profile {
+  userId            String            @id @db.Uuid @map("user_id")
+  fullName          String            @map("full_name")
+  documentId        String            @unique @map("document_id")
+  address           String?
+  profilePicture    String?           @map("profile_picture")
+  verificationStatus VerificationStatus @default(pending)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Vehicle {
+  id              String        @id @default(uuid()) @db.Uuid
+  driverId        String        @map("driver_id") @db.Uuid
+  brand           String
+  model           String
+  year            Int
+  plate           String        @unique
+  color           String
+  status          VehicleStatus @default(inactive)
+  documentsStatus Json          @default("{}") @map("documents_status")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  driver User   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trips  Trip[]
+
+  @@map("vehicles")
+}
+
+model Trip {
+  id           String     @id @default(uuid()) @db.Uuid
+  passengerId  String     @map("passenger_id") @db.Uuid
+  driverId     String     @map("driver_id") @db.Uuid
+  vehicleId    String     @map("vehicle_id") @db.Uuid
+  status       TripStatus @default(requested)
+  price        Decimal    @db.Decimal(10, 2)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  completedAt  DateTime?  @map("completed_at") @db.Timestamptz
+
+  // Relations
+  passenger User     @relation("PassengerTrips", fields: [passengerId], references: [id])
+  driver   User     @relation("DriverTrips", fields: [driverId], references: [id])
+  vehicle  Vehicle  @relation(fields: [vehicleId], references: [id])
+  payments Payment[]
+  ratings  Rating[]
+
+  @@map("trips")
+}
+
+model Payment {
+  id            String        @id @default(uuid()) @db.Uuid
+  tripId        String        @map("trip_id") @db.Uuid
+  amount        Decimal       @db.Decimal(10, 2)
+  method        PaymentMethod
+  status        PaymentStatus @default(pending)
+  transactionId String?       @map("transaction_id")
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Rating {
+  tripId     String   @map("trip_id") @db.Uuid
+  fromUserId String   @map("from_user_id") @db.Uuid
+  toUserId   String   @map("to_user_id") @db.Uuid
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  trip     Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  fromUser User @relation("RatingsGiven", fields: [fromUserId], references: [id])
+  toUser   User @relation("RatingsReceived", fields: [toUserId], references: [id])
+
+  @@id([tripId, fromUserId, toUserId])
+  @@map("ratings")
+}
+
+model EmergencyContact {
+  userId            String   @map("user_id") @db.Uuid
+  contactName       String   @map("contact_name")
+  contactPhone      String   @map("contact_phone")
+  relationship      String?
+  notifyOnEmergency Boolean  @default(true) @map("notify_on_emergency")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, contactPhone])
+  @@map("emergency_contacts")
+}
+
+model DriverDocument {
+  id                String            @id @default(uuid()) @db.Uuid
+  driverId          String            @map("driver_id") @db.Uuid
+  documentType      DocumentType      @map("document_type")
+  documentUrl       String            @map("document_url")
+  expirationDate    DateTime?         @map("expiration_date") @db.Date
+  verificationStatus VerificationStatus @default(pending)
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  driver User @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@map("driver_documents")
+}
