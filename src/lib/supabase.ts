@@ -1,18 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_CONFIG } from '@/config/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Faltan las credenciales de Supabase en las variables de entorno.');
+if (!SUPABASE_CONFIG.anonKey) {
+  throw new Error('Missing Supabase anon key');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  db: {
-    schema: 'public',
-  },
-}); 
+export const supabase = createClient(
+  SUPABASE_CONFIG.url,
+  SUPABASE_CONFIG.anonKey
+); 
