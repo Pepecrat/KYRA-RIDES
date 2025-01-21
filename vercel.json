@@ -12,14 +12,14 @@
     }
   },
   "env": {
-    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@next_public_clerk_publishable_key",
-    "CLERK_SECRET_KEY": "@clerk_secret_key",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_cnVsaW5nLWhlZGdlaG9nLTY1LmNsZXJrLmFjY291bnRzLmRldiQ",
+    "CLERK_SECRET_KEY": "sk_test_gKfl3j9oJbRtQWPhpiN10Kp6kdqeBcdLmtVuTD7lbl",
     "NEXT_PUBLIC_CLERK_SIGN_IN_URL": "/sign-in",
     "NEXT_PUBLIC_CLERK_SIGN_UP_URL": "/sign-up",
     "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL": "/dashboard",
     "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL": "/onboarding",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret"
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6dXB3eHZkZHloZXVlcWFubGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5ODkxMDIsImV4cCI6MjA1MjU2NTEwMn0.-W_kX_oQqolSl88zDJe0YeMujSitgoSU_pVa46E-B0s",
+    "DATABASE_URL": "postgresql://postgres:w7ZiW8LTqrZOZO50@db.gzupwxvddyheueqanlfz.supabase.co:5432/postgres",
+    "JWT_SECRET": "kyra-rides-secret-key-development-only"
   }
 } 
